@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { FormProps, InputNumber, InputNumberProps } from 'antd';
+import { FormProps, InputNumber } from 'antd';
 import { Form as AntdForm } from 'antd';
 import DebounceSelect from "@/app/components/ui/debounce-select";
 import { useDispatch, useSelector } from 'react-redux';
