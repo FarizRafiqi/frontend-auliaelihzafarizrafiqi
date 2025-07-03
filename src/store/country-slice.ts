@@ -32,8 +32,8 @@ export const fetchCountries = createAsyncThunk(
 
     // Always apply a filter, but make it case-insensitive and allow partial matches
     // If filter is empty, it will match all countries
-    if (apiUrl) {
-      apiUrl += `?filter={"where": {"nama_negara": "${filter}"}}`;
+    if (filter) {
+      apiUrl += `?filter={"where": {"nama_negara": "${filter}"}}`
     }
 
     const response = await fetch(apiUrl);
@@ -51,11 +51,20 @@ export const fetchCountries = createAsyncThunk(
         /^[a-zA-Z\s]+$/.test(country.nama_negara); // Only letters and spaces
     });
 
-    // Map to the expected format
-    return finalFilteredResults.map((country: Country) => ({
-      label: country.nama_negara,
-      value: country.id_negara.toString(),
-    }));
+    // Use a Map to ensure unique CountryValue objects based on their 'value' (id_negara)
+    const uniqueCountriesMap = new Map<string, CountryValue>();
+    finalFilteredResults.forEach((country: Country) => {
+      const countryValue: CountryValue = {
+        label: country.nama_negara,
+        value: country.id_negara.toString(),
+      };
+      // If a duplicate id_negara is encountered, the new one will overwrite the old one,
+      // effectively de-duplicating the list.
+      uniqueCountriesMap.set(country.id_negara.toString(), countryValue);
+    });
+
+    // Convert Map values back to an array
+    return Array.from(uniqueCountriesMap.values());
   }
 );
 

@@ -10,9 +10,14 @@ export interface DefaultSelectValue {
 }
 
 export interface DebounceSelectProps<ValueType = DefaultSelectValue>
-  extends Omit<SelectProps<ValueType | ValueType[]>, 'options' | 'children'> {
+  // Meng-Omit 'onChange' dari SelectProps dasar untuk mendefinisikan ulang sesuai kebutuhan kita.
+  // Juga meng-Omit 'value', 'options', 'children' karena kita sudah mendefinisikannya secara spesifik.
+  extends Omit<SelectProps<ValueType>, 'options' | 'children' | 'value' | 'onChange'> {
   fetchOptions: (search: string) => Promise<ValueType[]>;
   debounceTimeout?: number;
+  value?: ValueType; // Properti value secara eksplisit didefinisikan sebagai tipe tunggal ValueType atau undefined
+  // Definisi ulang onChange agar menerima ValueType tunggal atau undefined
+  onChange?: (value: ValueType | undefined) => void;
 }
 
 const DebounceSelect = <

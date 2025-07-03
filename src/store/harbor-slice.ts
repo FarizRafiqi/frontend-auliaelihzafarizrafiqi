@@ -26,14 +26,25 @@ const initialState: HarborState = {
 
 export const fetchHarbors = createAsyncThunk(
   'harbors/fetchHarbors',
-  async (params: { filter?: string } = {}) => {
-    const { filter = '' } = params;
+  async (params: { filter?: string, countryId?: string } = {}) => {
+    const { filter = '', countryId } = params;
     let apiUrl = 'http://202.157.176.100:3001/pelabuhans';
 
-    // Always apply a filter, but make it case-insensitive and allow partial matches
-    // If filter is empty, it will match all harbors
-    if (apiUrl) {
-      apiUrl += `?filter={"where": {"nama_pelabuhan": "${filter}"}}`;
+    const whereConditions: { [key: string]: string | undefined } = {};
+
+    if (filter) {
+      whereConditions.nama_pelabuhan = filter;
+    }
+
+    if (countryId) {
+      whereConditions.id_negara = countryId;
+    }
+
+    // Hanya tambahkan parameter filter jika ada kondisi
+    if (Object.keys(whereConditions).length > 0) {
+      const filterObject = { where: whereConditions }; // Bungkus kondisi dalam objek 'where'
+      const filterString = encodeURIComponent(JSON.stringify(filterObject));
+      apiUrl += `?filter=${filterString}`;
     }
 
     const response = await fetch(apiUrl);
@@ -44,18 +55,22 @@ export const fetchHarbors = createAsyncThunk(
     const data = await response.json();
     const results = Array.isArray(data) ? data : [];
 
-    // Clean the data to remove invalid entries
     const finalFilteredResults = results.filter((harbor: Harbor) => {
       return harbor.nama_pelabuhan &&
         harbor.nama_pelabuhan.toLowerCase() !== 'string' &&
         /^[a-zA-Z\s]+$/.test(harbor.nama_pelabuhan); // Only letters and spaces
     });
 
-    // Map to the expected format
-    return finalFilteredResults.map((harbor: Harbor) => ({
-      label: harbor.nama_pelabuhan,
-      value: harbor.id_negara.toString(),
-    }));
+    const uniqueHarborsMap = new Map<string, HarborValue>();
+    finalFilteredResults.forEach((harbor: Harbor) => {
+      const harborValue: HarborValue = {
+        label: harbor.nama_pelabuhan,
+        value: harbor.id_pelabuhan.toString(),
+      };
+      uniqueHarborsMap.set(harbor.id_pelabuhan.toString(), harborValue);
+    });
+
+    return Array.from(uniqueHarborsMap.values());
   }
 );
 
