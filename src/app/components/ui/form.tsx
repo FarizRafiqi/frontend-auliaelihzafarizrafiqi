@@ -31,8 +31,11 @@ const Form = () => {
   const items = useSelector(selectItems);
 
   const fetchCountryList = useCallback(async (search: string): Promise<CountryValue[]> => {
-    await dispatch(fetchCountries({ filter: search }));
-    return countries;
+    const actionResult = await dispatch(fetchCountries({ filter: search }));
+    if (fetchCountries.fulfilled.match(actionResult)) {
+      return actionResult.payload;
+    }
+    return [];
   }, [dispatch, countries]);
 
   const fetchHarborList = useCallback(async (search: string): Promise<HarborValue[]> => {
@@ -49,14 +52,6 @@ const Form = () => {
     await dispatch(fetchItems({ filter: search }));
     return items;
   }, [dispatch, items]);
-
-  // const onChangeDiscount: InputNumberProps['onChange'] = (value) => {
-  //   console.log('changed discount', value);
-  // };
-  //
-  // const onChangePrice: InputNumberProps['onChange'] = (value) => {
-  //   console.log('changed price', value);
-  // };
 
   const recalcTotal = () => {
     const price = form.getFieldValue('price') ?? 0;
@@ -179,21 +174,21 @@ const Form = () => {
         name="discount"
         rules={[{required: true, message: 'Please input your discount!'}]}
       >
-        <InputNumber suffix="%" min={0} max={10} onChange={recalcTotal}/>
+        <InputNumber style={{ width: '100%' }} suffix="%" min={0} onChange={recalcTotal}/>
       </AntdForm.Item>
       <AntdForm.Item<FieldType>
         label="Harga"
         name="price"
         rules={[{required: true, message: 'Please input your price!'}]}
       >
-        <InputNumber prefix="Rp" min={0} max={10} onChange={recalcTotal}/>
+        <InputNumber style={{ width: '100%' }} prefix="Rp" min={0} onChange={recalcTotal}/>
       </AntdForm.Item>
       <AntdForm.Item<FieldType>
         label="Total"
         name="total"
         rules={[{required: true, message: 'Please input your total!'}]}
       >
-        <InputNumber prefix="Rp" min={0} max={10} />
+        <InputNumber style={{ width: '100%' }} prefix="Rp" min={0} />
       </AntdForm.Item>
     </AntdForm>
   )
