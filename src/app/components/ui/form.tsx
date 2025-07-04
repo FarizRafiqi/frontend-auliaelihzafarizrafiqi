@@ -198,19 +198,40 @@ const Form = () => {
       >
         <InputNumber style={{ width: '100%' }} suffix="%" min={0} onChange={recalcTotal}/>
       </AntdForm.Item>
-      <AntdForm.Item<FieldType>
+      <AntdForm.Item
         label="Harga"
         name="price"
         rules={[{required: true, message: 'Please input your price!'}]}
       >
-        <InputNumber style={{ width: '100%' }} prefix="Rp" min={0} onChange={recalcTotal}/>
+        <InputNumber<number>
+          style={{ width: '100%' }}
+          prefix="Rp"
+          min={0}
+          onChange={recalcTotal}
+          formatter={(value) =>
+            value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : ''
+          }
+          parser={(value) =>
+            value ? Number(value.replace(/\./g, '')) : 0
+          }
+        />
       </AntdForm.Item>
-      <AntdForm.Item<FieldType>
+      <AntdForm.Item
         label="Total"
         name="total"
         rules={[{required: true, message: 'Please input your total!'}]}
       >
-        <InputNumber style={{ width: '100%' }} prefix="Rp" min={0} />
+        <InputNumber<number>
+          style={{ width: '100%' }}
+          prefix="Rp"
+          min={0}
+          formatter={(value) =>
+            value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') : ''
+          }
+          parser={(value) =>
+            value ? Number(value.replace(/\./g, '')) : 0
+          }
+        />
       </AntdForm.Item>
     </AntdForm>
   )
