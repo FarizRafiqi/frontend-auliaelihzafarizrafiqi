@@ -6,7 +6,7 @@ import { Form as AntdForm } from 'antd';
 import DebounceSelect from "@/app/components/ui/debounce-select";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCountries, selectCountries, CountryValue } from '@/store/country-slice';
-import { fetchHarbors, clearHarbors, HarborValue, selectHarbors } from '@/store/harbor-slice';
+import { fetchHarbors, clearHarbors, HarborValue } from '@/store/harbor-slice';
 import { fetchItems, selectItems, ItemValue } from '@/store/item-slice';
 import { AppDispatch } from '@/store/store';
 import TextArea from "antd/es/input/TextArea";
@@ -29,7 +29,6 @@ const Form = () => {
   const dispatch = useDispatch<AppDispatch>();
   const countries = useSelector(selectCountries);
   const items = useSelector(selectItems);
-  // const harbors = useSelector(selectHarbors);
 
   const fetchCountryList = useCallback(async (search: string): Promise<CountryValue[]> => {
     const actionResult = await dispatch(fetchCountries({ filter: search }));
