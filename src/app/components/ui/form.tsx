@@ -29,7 +29,7 @@ const Form = () => {
   const dispatch = useDispatch<AppDispatch>();
   const countries = useSelector(selectCountries);
   const items = useSelector(selectItems);
-  const harbors = useSelector(selectHarbors);
+  // const harbors = useSelector(selectHarbors);
 
   const fetchCountryList = useCallback(async (search: string): Promise<CountryValue[]> => {
     const actionResult = await dispatch(fetchCountries({ filter: search }));
