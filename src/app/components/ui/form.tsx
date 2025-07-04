@@ -6,7 +6,7 @@ import { Form as AntdForm } from 'antd';
 import DebounceSelect from "@/app/components/ui/debounce-select";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCountries, selectCountries, CountryValue } from '@/store/country-slice';
-import { fetchHarbors, clearHarbors, HarborValue } from '@/store/harbor-slice';
+import { fetchHarbors, clearHarbors, HarborValue, selectHarbors } from '@/store/harbor-slice';
 import { fetchItems, selectItems, ItemValue } from '@/store/item-slice';
 import { AppDispatch } from '@/store/store';
 import TextArea from "antd/es/input/TextArea";
@@ -29,6 +29,7 @@ const Form = () => {
   const dispatch = useDispatch<AppDispatch>();
   const countries = useSelector(selectCountries);
   const items = useSelector(selectItems);
+  const harbors = useSelector(selectHarbors);
 
   const fetchCountryList = useCallback(async (search: string): Promise<CountryValue[]> => {
     const actionResult = await dispatch(fetchCountries({ filter: search }));
@@ -71,13 +72,13 @@ const Form = () => {
     // Jika ada negara yang dipilih
     if (countryValue) {
       // Bersihkan pilihan pelabuhan saat ini dan data pelabuhan yang diambil
-      setHarborValue(undefined); // Hapus nilai pelabuhan yang dipilih di state lokal
-      form.setFieldsValue({ harbor: undefined }); // Kosongkan field pelabuhan di AntdForm
-      dispatch(clearHarbors()); // Bersihkan daftar pelabuhan yang ada di Redux state
+      setHarborValue(undefined);
+      form.setFieldsValue({ harbor: undefined });
+      dispatch(clearHarbors());
 
       // Ambil pelabuhan untuk negara yang baru dipilih
-      // fetchHarborList sudah memiliki dependensi pada countryValue?.value
-      fetchHarborList('').then(r => console.log(r)); // Panggil fetchHarborList dengan string kosong untuk filter pencarian awal
+      // Panggil fetchHarborList dengan string kosong untuk filter pencarian awal
+      fetchHarborList('').then(r => console.log('Harbors fetched:', r));
     } else {
       // Jika tidak ada negara yang dipilih (misal, pilihan negara dihapus),
       // bersihkan juga pelabuhan yang terpilih dan daftar pelabuhan
@@ -125,6 +126,7 @@ const Form = () => {
         rules={[{required: true, message: 'Please input your harbor!'}]}
       >
         <DebounceSelect
+          key={countryValue?.value || 'no-country'}
           value={harborValue}
           placeholder="Pilih Pelabuhan"
           fetchOptions={fetchHarborList}

@@ -7,7 +7,7 @@ export default function Home() {
       {/* Main Content */}
       <main className="flex flex-1 flex-col items-center justify-center px-4">
         <Card
-          className="w-full max-w-xl shadow-xl border-0 rounded-2xl transition-transform duration-300 hover:scale-[1.025] hover:shadow-2xl bg-white/90 backdrop-blur-md animate-fade-in"
+          className="w-full max-w-xl shadow-xl border-0 rounded-2xl transition-transform duration-300 hover:shadow-2xl bg-white/90 backdrop-blur-md animate-fade-in"
           style={{ padding: 32 }}
         >
           <Form />

@@ -34,17 +34,24 @@ export const fetchItems = createAsyncThunk(
   'items/fetchItems',
   async (params: { filter?: string } = {}) => {
     const { filter = '' } = params;
-    let apiUrl = 'http://202.157.176.100:3001/barangs';
+    let apiUrl = '/api/backend/barangs';
 
-    // Always apply a filter, but make it case-insensitive and allow partial matches
-    // If filter is empty, it will match all items
+    const whereConditions: { [key: string]: string | undefined } = {};
+
     if (filter) {
-      apiUrl += `?filter={"where": {"nama_barang": "${filter}"}}`
+      whereConditions.nama_barang = filter;
+    }
+
+    // Hanya tambahkan parameter filter jika ada kondisi
+    if (Object.keys(whereConditions).length > 0) {
+      const filterObject = { where: whereConditions }; // Bungkus kondisi dalam objek 'where'
+      const filterString = encodeURIComponent(JSON.stringify(filterObject));
+      apiUrl += `?filter=${filterString}`;
     }
 
     const response = await fetch(apiUrl);
     if (!response.ok) {
-      throw new Error('Failed to fetch barang');
+      throw new Error('Failed to fetch items');
     }
 
     const data = await response.json();

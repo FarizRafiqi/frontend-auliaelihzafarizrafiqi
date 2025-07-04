@@ -28,12 +28,19 @@ export const fetchCountries = createAsyncThunk(
   'countries/fetchCountries',
   async (params: { filter?: string } = {}) => {
     const { filter = '' } = params;
-    let apiUrl = 'http://202.157.176.100:3001/negaras';
+    let apiUrl = '/api/backend/negaras';
 
-    // Always apply a filter, but make it case-insensitive and allow partial matches
-    // If filter is empty, it will match all countries
+    const whereConditions: { [key: string]: string | undefined } = {};
+
     if (filter) {
-      apiUrl += `?filter={"where": {"nama_negara": "${filter}"}}`
+      whereConditions.nama_negara = filter;
+    }
+
+    // Hanya tambahkan parameter filter jika ada kondisi
+    if (Object.keys(whereConditions).length > 0) {
+      const filterObject = { where: whereConditions }; // Bungkus kondisi dalam objek 'where'
+      const filterString = encodeURIComponent(JSON.stringify(filterObject));
+      apiUrl += `?filter=${filterString}`;
     }
 
     const response = await fetch(apiUrl);

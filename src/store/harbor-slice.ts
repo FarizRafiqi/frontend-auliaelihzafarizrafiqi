@@ -28,7 +28,7 @@ export const fetchHarbors = createAsyncThunk(
   'harbors/fetchHarbors',
   async (params: { filter?: string, countryId?: string } = {}) => {
     const { filter = '', countryId } = params;
-    let apiUrl = 'http://202.157.176.100:3001/pelabuhans';
+    let apiUrl = '/api/backend/pelabuhans';
 
     const whereConditions: { [key: string]: string | undefined } = {};
 

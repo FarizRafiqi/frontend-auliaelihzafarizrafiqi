@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 import { Select, Spin } from 'antd';
 import type { SelectProps } from 'antd';
 import debounce from 'lodash/debounce';
@@ -15,9 +15,9 @@ export interface DebounceSelectProps<ValueType = DefaultSelectValue>
   extends Omit<SelectProps<ValueType>, 'options' | 'children' | 'value' | 'onChange'> {
   fetchOptions: (search: string) => Promise<ValueType[]>;
   debounceTimeout?: number;
-  value?: ValueType; // Properti value secara eksplisit didefinisikan sebagai tipe tunggal ValueType atau undefined
-  // Definisi ulang onChange agar menerima ValueType tunggal atau undefined
+  value?: ValueType;
   onChange?: (value: ValueType | undefined) => void;
+  key?: string | number;
 }
 
 const DebounceSelect = <
@@ -27,6 +27,11 @@ const DebounceSelect = <
   const [options, setOptions] = useState<ValueType[]>([]);
   const fetchRef = useRef(0);
   const initialFetchPerformed = useRef(false);
+
+  useEffect(() => {
+    initialFetchPerformed.current = false;
+    setOptions([]);
+  }, [props.key]);
 
   const debounceFetcher = useMemo(() => {
     const loadOptions = (value: string) => {
@@ -49,8 +54,8 @@ const DebounceSelect = <
 
   const handleFocus = () => {
     if (!initialFetchPerformed.current) {
-      debounceFetcher(''); // Panggil fetcher dengan string kosong untuk fetch semua data
-      initialFetchPerformed.current = true; // Setel menjadi true agar tidak fetch lagi pada fokus berikutnya
+      debounceFetcher('');
+      initialFetchPerformed.current = true;
     }
   };
 
