@@ -183,7 +183,13 @@ const Form = () => {
         label={<></>}
         name="description"
       >
-        <TextArea disabled className="w-full" rows={4} maxLength={6}/>
+        <TextArea
+          disabled
+          className="w-full"
+          rows={4}
+          maxLength={6}
+          style={{ resize: 'none' }}
+        />
       </AntdForm.Item>
       <AntdForm.Item<FieldType>
         label="Diskon"
