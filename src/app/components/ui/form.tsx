@@ -7,7 +7,7 @@ import DebounceSelect from "@/app/components/ui/debounce-select";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCountries, selectCountries, CountryValue } from '@/store/country-slice';
 import { fetchHarbors, clearHarbors, HarborValue } from '@/store/harbor-slice';
-import { fetchItems, selectItems, ItemValue } from '@/store/item-slice';
+import { fetchItems, selectItems, clearItems, ItemValue } from '@/store/item-slice';
 import { AppDispatch } from '@/store/store';
 import TextArea from "antd/es/input/TextArea";
 
@@ -49,9 +49,14 @@ const Form = () => {
   }, [countryValue?.value, dispatch]);
 
   const fetchItemList = useCallback(async (search: string): Promise<ItemValue[]> => {
-    await dispatch(fetchItems({ filter: search }));
-    return items;
-  }, [dispatch, items]);
+    const currentHarborId = harborValue?.value;
+    const actionResult = await dispatch(fetchItems({ filter: search, harborId: currentHarborId }));
+    // Jika thunk berhasil, payload akan berisi pelabuhan yang diambil
+    if (fetchItems.fulfilled.match(actionResult)) {
+      return actionResult.payload;
+    }
+    return [];
+  }, [dispatch, harborValue?.value]);
 
   const recalcTotal = () => {
     const price = form.getFieldValue('price') ?? 0;
@@ -68,7 +73,6 @@ const Form = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    // Jika ada negara yang dipilih
     if (countryValue) {
       // Bersihkan pilihan pelabuhan saat ini dan data pelabuhan yang diambil
       setHarborValue(undefined);
@@ -86,6 +90,16 @@ const Form = () => {
       dispatch(clearHarbors());
     }
   }, [countryValue, dispatch, fetchHarborList, form]);
+
+  useEffect(() => {
+    setItemValue(undefined);
+    form.setFieldsValue({ item: undefined });
+    dispatch(clearItems());
+
+    if (harborValue) {
+      fetchItemList('');
+    }
+  }, [harborValue]);
 
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     console.log('Success:', values);
@@ -141,6 +155,7 @@ const Form = () => {
         rules={[{required: true, message: 'Please input your item!'}]}
       >
         <DebounceSelect
+          key={harborValue?.value || 'no-harbor'}
           value={itemValue}
           placeholder="Pilih Barang"
           fetchOptions={fetchItemList}

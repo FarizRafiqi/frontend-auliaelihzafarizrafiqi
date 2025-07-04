@@ -32,14 +32,18 @@ const initialState: ItemState = {
 
 export const fetchItems = createAsyncThunk(
   'items/fetchItems',
-  async (params: { filter?: string } = {}) => {
-    const { filter = '' } = params;
+  async (params: { filter?: string, harborId?: string } = {}) => {
+    const { filter = '', harborId } = params;
     let apiUrl = '/api/backend/barangs';
 
-    const whereConditions: { [key: string]: string | undefined } = {};
+    const whereConditions: { [key: string]: string | number | undefined } = {};
 
     if (filter) {
       whereConditions.nama_barang = filter;
+    }
+
+    if (harborId) {
+      whereConditions.id_pelabuhan = Number(harborId);
     }
 
     // Hanya tambahkan parameter filter jika ada kondisi
